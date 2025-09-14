@@ -1,0 +1,40 @@
+directory: REPLACE_MUSIC_DIR
+library: REPLACE_DB_PATH
+
+plugins: lyrics info spotify lastgenre extrafiles
+
+import:
+  write: yes
+  move: yes
+  group_albums: yes
+  none_rec_action: asis
+
+paths:
+  default: %first{$albumartist,1,0,$,}/$album%aunique{}/$title
+  comp: %first{$albumartist,1,0,$,}/$album%aunique{}/$title
+
+extrafiles:
+  patterns:
+    lyrics: '*.lrc'
+
+lastgenre:
+  count: 3
+  source: track
+  force: yes
+  keep_existing: no
+
+lyrics:
+  auto: yes
+  synced: yes
+  force: no
+  sources: [lrclib]
+
+match:
+  strong_rec_thresh: 0.4
+
+spotify:
+  source_weight: 0.9
+
+musicbrainz:
+  enabled: no
+

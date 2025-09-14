@@ -1,0 +1,13 @@
+beautifulsoup4
+python-slugify
+rich
+more-itertools
+pydantic
+requests
+spotdl
+yt-dlp
+bgutil-ytdlp-pot-provider
+beets
+beets[lastgenre]
+beets[lyrics]
+beets-extrafiles

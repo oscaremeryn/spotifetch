@@ -1,0 +1,16 @@
+#!/bin/bash
+
+IMPORT_DIR="$MAIN_DIR/out/$1"
+STATE_DIR="$MAIN_DIR/state/$1"
+MUSIC_DIR="$MAIN_DIR/music/$1/music"
+
+CONFIG_PATH="$STATE_DIR/beets.yaml"
+DB_PATH="$STATE_DIR/beets.db"
+
+mkdir -pv "$STATE_DIR" "$MUSIC_DIR"
+
+cp -rv "$MAIN_DIR/assets/beets.yaml" "$CONFIG_PATH"
+sed -i "s?REPLACE_DB_PATH?$DB_PATH?" "$CONFIG_PATH"
+sed -i "s?REPLACE_MUSIC_DIR?$MUSIC_DIR?" "$CONFIG_PATH"
+
+beet -c "$CONFIG_PATH" import -ql "$STATE_DIR/import.log" --quiet-fallback asis "$IMPORT_DIR"

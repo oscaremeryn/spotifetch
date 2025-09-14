@@ -1,0 +1,4 @@
+#!/bin/bash
+set -e
+
+spotdl --format mp3 --output '{album-artist}/{album}/{title}.{output-ext}' --yt-dlp-args '-f mp3,m4a,webm --cookies ../../cookies.txt --extractor-args "youtubepot-bgutilhttp:base_url=http://127.0.0.1:4416"' --max-retries 5 --threads 6 --preload --save-errors "$STATE_DIR/errors.log" --id3-separator ', ' --log-level=DEBUG download $* --audio youtube-music youtube soundcloud --generate-lrc --lyrics genius synced --genius-access-token 'V1cJYvWbhzkZ8saefsEwi_ZVI1ZmPUjnNRb3XTvtgTN9YLEYNm5IuFrPqYbebjQQ'
