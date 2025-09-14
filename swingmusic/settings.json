@@ -1,0 +1,45 @@
+{
+    "serverId": "b71b452d-407c-444a-a2c9-f7d240c0a846",
+    "usersOnLogin": true,
+    "rootDirs": [
+        "/music",
+        "/out"
+    ],
+    "excludeDirs": [],
+    "artistSeparators": [
+        ","
+    ],
+    "artistSplitIgnoreList": [
+        "C & C Music Factory",
+        "Belle & Sebastian",
+        "FO&O",
+        "Judy & Mary",
+        "C&C Music Factory",
+        "Bob marley & the wailers",
+        "Smith & Thell",
+        "Crosby, Stills, Nash & Young",
+        "Peter, Paul & Mary",
+        "Simon & Garfunkel",
+        "Florence & The Machine",
+        "AC/DC"
+    ],
+    "genreSeparators": [
+        "/",
+        ";",
+        ","
+    ],
+    "extractFeaturedArtists": false,
+    "removeProdBy": true,
+    "removeRemasterInfo": true,
+    "mergeAlbums": false,
+    "cleanAlbumTitle": false,
+    "showAlbumsAsSingles": true,
+    "enablePeriodicScans": true,
+    "scanInterval": 20,
+    "enableWatchdog": true,
+    "showPlaylistsInFolderView": false,
+    "enablePlugins": true,
+    "lastfmApiKey": "0553005e93f9a4b4819d835182181806",
+    "lastfmApiSecret": "5e5306fbf3e8e3bc92f039b6c6c4bd4e",
+    "lastfmSessionKeys": {}
+}

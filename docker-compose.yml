@@ -1,0 +1,20 @@
+services:
+  swingmusic:
+    image: ghcr.io/swingmx/swingmusic:v2.0.8
+    container_name: swingmusic
+    volumes:
+      - ./out:/out
+      - ./music:/music
+      - ./:/config
+    ports:
+      - "1970:1970"
+    restart: unless-stopped
+
+  bgutil-provider:
+    image: brainicism/bgutil-ytdlp-pot-provider
+    container_name: bgutil-provider
+    init: true
+    ports:
+      - "4416:4416"
+    restart: unless-stopped
+
