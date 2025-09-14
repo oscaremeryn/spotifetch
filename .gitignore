@@ -1,0 +1,9 @@
+.idea/
+.venv/
+__pycache__/
+
+swingmusic/
+
+*.json
+config.sh
+cookies.txt
