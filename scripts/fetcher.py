@@ -1,61 +1,19 @@
 import json
-import os
 import logging
+import os
 import subprocess
 import sys
-import time
-from functools import cached_property
+from datetime import datetime
 from os import waitstatus_to_exitcode
-from pathlib import Path, PurePath
 
 import requests
-
-from datetime import datetime
-from typing import Literal, Optional, Any
 from bs4 import BeautifulSoup
-from more_itertools.more import first
-from pydantic import BaseModel
 from slugify import slugify
 
-from consts import STATE_DIR, FETCH_ATTEMPT_COUNT, PACKER_LEEWAY_SINCE_FETCH, SWING_ACCESS_TOKEN, \
-    FETCH_QUEUE_FILE, FetcherException, FETCH_EXECUTION_TIMEOUT, OUT_DIR, COOKIES_FILE
+from consts import FETCH_ATTEMPT_COUNT, PACKER_LEEWAY_SINCE_FETCH, SWING_ACCESS_TOKEN, \
+    FETCH_QUEUE_FILE, FetcherException, COOKIES_FILE
+from models.artist_fetch import ArtistFetch
 from packer import queue_packer_job, PackerJob
-from processes import execute_script
-from products import calculate_md5
-
-
-class ArtistFetch(BaseModel):
-    url: str
-    name: Optional[str] = None
-    status: Optional[Literal['FAILED']] = None
-    error_log: Optional[str] = None
-    ignore_errors: Optional[bool] = None
-
-    class Config:
-        ignored_types = (cached_property,)
-        json_encoders = {PurePath: lambda path: str(path)}
-
-    def generate_error_file(self) -> Path:
-        return self.state_dir / f'error_{datetime.now().strftime("%Y%m%d-%H%M%S")}.log'
-
-    def get_latest_error_file(self) -> Optional[Path]:
-        return first(sorted(self.state_dir.glob('error*'), reverse=True), None)
-
-    @cached_property
-    def url_hash(self) -> str:
-        return calculate_md5(self.url)
-
-    @cached_property
-    def state_dir(self) -> Path:
-        _ = STATE_DIR / self.url_hash
-        _.mkdir(parents=True, exist_ok=True)
-        return _
-
-    @cached_property
-    def out_dir(self) -> Path:
-        _ = OUT_DIR / self.url_hash
-        _.mkdir(parents=True, exist_ok=True)
-        return _
 
 
 def extract_artist_name_from_page(content: str) -> str:
@@ -94,7 +52,7 @@ def fetch_artist(artist: ArtistFetch) -> bool:
             error_file = artist.generate_error_file()
             return_code = waitstatus_to_exitcode(os.system(
                 # f"spotdl --format mp3 --output '{out_dir}/{{album-artist}}/{{album}}/{{title}}.{{output-ext}}' --yt-dlp-args '-f bestaudio* --cookies {COOKIES_FILE} --extractor-args \"youtubepot-bgutilhttp:base_url=http://127.0.0.1:4416\"' --max-retries 1 --threads 6 --save-errors '{error_file}' --id3-separator ', ' --log-level=DEBUG download {artist.url} --audio youtube youtube-music soundcloud --generate-lrc --lyrics synced genius azlyrics musixmatch --genius-access-token 'V1cJYvWbhzkZ8saefsEwi_ZVI1ZmPUjnNRb3XTvtgTN9YLEYNm5IuFrPqYbebjQQ'",
-                f"spotdl --format mp3 --output '{artist.out_dir}/{{album-artist}}/{{album}}/{{title}}.{{output-ext}}' --yt-dlp-args '--format-sort-force -S abr,acodec --cookies {COOKIES_FILE} --extractor-args=\"youtube:player_client=default\"' --max-retries 1 --threads 6 --save-errors '{error_file}' --save-file '{artist.state_dir / "cache.spotdl"}' --preload --fetch-albums --id3-separator ', ' --log-level=DEBUG download {artist.url} --audio youtube youtube-music soundcloud --generate-lrc --lyrics synced genius musixmatch azlyrics --genius-access-token 'V1cJYvWbhzkZ8saefsEwi_ZVI1ZmPUjnNRb3XTvtgTN9YLEYNm5IuFrPqYbebjQQ'",
+                f"spotdl --format mp3 --output '{artist.out_dir}/{{album-artist}}/{{album}}/{{title}}.{{output-ext}}' --yt-dlp-args '--format-sort-force -S abr,acodec --format bestaudio* --cookies {COOKIES_FILE} --extractor-args=\"youtubepot-bgutilhttp:base_url=http://127.0.0.1:4416\"' --max-retries 1 --threads 5 --save-errors '{error_file}' --save-file '{artist.state_dir / "cache.spotdl"}' --preload --fetch-albums --id3-separator ', ' --log-level=DEBUG download {artist.url} --audio youtube-music youtube --generate-lrc --lyrics synced genius azlyrics --genius-access-token 'V1cJYvWbhzkZ8saefsEwi_ZVI1ZmPUjnNRb3XTvtgTN9YLEYNm5IuFrPqYbebjQQ' --client-id '2f2a55464aed4ad19abf145795e65dfc' --client-secret 'a3fb18b7b2a648a5bd32fa6f09f81b84'",
             ))
 
             if artist.ignore_errors:
@@ -119,7 +77,7 @@ def fetch_artist(artist: ArtistFetch) -> bool:
         artist.status = 'FAILED'
 
     if artist.status == 'FAILED' and not artist.ignore_errors:
-        artist.error_log = artist.get_latest_error_file()
+        artist.error_log = str(artist.get_latest_error_file())
         artist.ignore_errors = False
         return False
 

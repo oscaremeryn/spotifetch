@@ -26,7 +26,7 @@ COOKIES_FILE = Path(os.environ['COOKIES_FILE'])
 
 SLEEP_IN_LOOP = 5
 
-FETCH_QUEUE_FILE = SCRIPTS_DIR / 'artist_queue.json'
+FETCH_QUEUE_FILE = SCRIPTS_DIR / '.artist_queue.json'
 FETCH_ATTEMPT_COUNT = 3
 FETCH_EXECUTION_TIMEOUT = timedelta(minutes=40)
 
